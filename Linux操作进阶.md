@@ -84,7 +84,7 @@ awk
 	'
 	BEGIN {actions}
 		/pattern1/{actions}
-		......
+		...
 		/patternN/{actions}
 	END {actions}
 	'

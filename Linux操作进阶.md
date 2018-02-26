@@ -155,3 +155,6 @@ wait
 
 (2) [ubuntu16.4安装中文输入法](https://www.cnblogs.com/zhaopengcheng/p/6040605.html)
 
+(3) 小伊老师Linux课程课件
+
+(4) [Bash脚本实现批量作业并行化](https://www.linuxidc.com/Linux/2015-01/112363.htm)

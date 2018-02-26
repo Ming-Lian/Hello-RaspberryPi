@@ -7,6 +7,8 @@
 - [文本处理双剑客: sed & AWK](#operate-txt)
 	- [sed](#sed)
 	- [AWK](#awk)
+- [进程并行化](#parallel-process)
+	- [最简单的并行化方法：&+wait](#simplest-wait)
 
 <h1 name="title">Linux进阶操作</h1>
 
@@ -127,6 +129,25 @@ InputFile
 |RSTART|由match函数所匹配的字符串第一个位置|
 |SUBSEP|数组下标分隔符（默认值是\034）|
 
+<a name="parallel-process"><h3>进程并行化 [<sup>目录</sup>](#content)</h3></a>
+
+<a name="simplest-wait"><h4>最简单的并行化方法：&+wait [<sup>目录</sup>](#content)</h4></a>
+
+利用Bash的后台运行&和wait函数，可实现最简单的批量作业并行化。
+
+格式为：
+
+```
+do
+	{
+	code1;
+	code2;
+	...
+	coden;
+	} &
+done
+wait
+```
 
 参考资料：
 

@@ -4,6 +4,9 @@
 - [安装中文语言包](#install-chinese)
 	- [CentOS (yum)](#centos)
 	- [Ubuntu (apt)](#debian)
+- [文本处理双剑客: sed & AWK](#operate-txt)
+	- [sed](#sed)
+	- [AWK](#awk)
 
 <h1 name="title">Linux进阶操作</h1>
 
@@ -64,6 +67,65 @@ $ sudo ibus-setup
 在弹出对话框中，添加Chinese-Pinyin输入法。
 
 <img src=/picture/Linux-advanced-ibus-config.png width="800" />
+
+<a name="operate-txt"><h3>文本处理双剑客: sed & AWK [<sup>目录</sup>](#content)</h4></a>
+
+<a name="sed"><h4>sed [<sup>目录</sup>](#content)</h4></a>
+
+<a name="awk"><h4>AWK [<sup>目录</sup>](#content)</h4></a>
+
+脚本结构
+
+```
+awk
+
+	'
+	BEGIN {actions}
+		/pattern1/{actions}
+		......
+		/patternN/{actions}
+	END {actions}
+	'
+
+InputFile
+```
+
+- BEGIN{actions} 和END{actions} 是可选的
+- /pattern/和{actions} 可以省略，但不能同时省略
+	- /pattern/省略时表示对所有的输入行执行指定的actions
+	- {actions} 省略时表示打印整行
+
+
+- 编辑命令（一个、一组命令或一个命令文件）
+	- 模式：只编辑与模式相匹配的记录行；没有提供模式时，匹配所有行
+	- 命令：具体执行的编辑命令；没有指定命令时，打印整个记录行
+
+特殊变量
+
+|变量|描述|
+|:---|:---|
+|$n|当前记录的第n个字段，字段间由FS分隔|
+|$0|完整的输入记录|
+|ARGC|命令行参数的数目|
+|ARGIND|命令行中当前文件的位置（从0开始算）|
+|ARGV|包含命令行参数的数组|
+|CONVFMT|数字转换格式（默认值为%.6g)|
+|ENVIRON|环境变量关联数组|
+|ERRNO|最后一个系统错误描述|
+|FIELDWIDTHS|字段宽度列表（用空格键分隔）|
+|FILENAME|当前文件名|
+|FNR|同NR，但相对于当前文件|
+|FS|字段分隔符（默认是任何空格）|
+|IGNORECASE|如果为真，则进行忽略大小写的匹配|
+|NF|当前记录中的字段数|
+|NR|当前记录数|
+|OFMT|数字的输出格式（默认值是%.6g)|
+|OFS|输出字段分隔符（默认值是一个空格）|
+|ORS|输出记录分隔符（默认值是一个换行符）|
+|RLENGTH|由match函数所匹配的字符串的长度|
+|RS|记录分隔符（默认是一个换行符）|
+|RSTART|由match函数所匹配的字符串第一个位置|
+|SUBSEP|数组下标分隔符（默认值是\034）|
 
 
 参考资料：

@@ -158,7 +158,7 @@ sudo apt-get update
 sudo apt-get upgrade
 ```
 
-但是在时间操作过程中会出现一些问题：
+但是在实际操作过程中会出现一些问题：
 
 <a name="update-err"><h4>update 出错 [<sup>目录</sup>](#content)</h4></a>
 

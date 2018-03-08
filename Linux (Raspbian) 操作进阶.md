@@ -9,6 +9,9 @@
 - [更改软件源](#change-source)
 	- [2017-11-29-raspbian-stretch(基于Debian9)](#stretch)
 	- [2017-06-21-raspbian-jessie(基于Debian8)](#jessie)
+- [升级及报错处理](#update-and-solve-err)
+	- [update 出错](#update-err)
+	- [upgrade 出错](#upgrade-err)
 - [文本处理双剑客: sed & AWK](#operate-txt)
 	- [sed](#sed)
 	- [AWK](#awk)
@@ -145,6 +148,42 @@ deb-src http://mirrors.ustc.edu.cn/raspbian/raspbian/ jessie main contrib non-fr
 ```
 deb http://mirrors.ustc.edu.cn/archive.raspberrypi.org/ jessie main ui
 ```
+
+<a name="update-and-solve-err"><h3>升级及报错处理 [<sup>目录</sup>](#content)</h3></a>
+
+一般升级更新只需要运行以下两条命令即可：
+
+```
+sudo apt-get update
+sudo apt-get upgrade
+```
+
+但是在时间操作过程中会出现一些问题：
+
+<a name="update-err"><h4>update 出错 [<sup>目录</sup>](#content)</h4></a>
+
+update过程出错一般是软件源地址无法连接，导致更新包无法下载到本地导致的，所以解决方法：[更改软件源](#change-source)
+
+<a name="upgrade-err"><h4>upgrade 出错 [<sup>目录</sup>](#content)</h4></a>
+
+如果update过程顺利，但是到执行`apt-get upgrade`时报错：
+
+**E: The value 'stable' is invalid for APT::Default-Release as such a release is not available in the sources**
+
+即系统指定的包管理工具的版本"stable"无效，需要更改为合适的版本，如**"wheezy"**或**"jessie"**
+
+```
+# 寻找相应的配置文件
+grep -r "stable" /etc/apt/*
+
+# 得到输出：/etc/apt/apt.conf.d/99openmediavault-release:APT::Default-Release "stable";
+# 说明配置文件为：/etc/apt/apt.conf.d/99openmediavault-release
+
+# 修改该文件，树莓派下vi/vim不太好用，建议使用nano。把"stable"改成"jessie"
+nano /etc/apt/apt.conf.d/99openmediavault-release
+```
+
+然后再执行`apt-get upgrade`就没问题了
 
 <a name="operate-txt"><h3>文本处理双剑客: sed & AWK [<sup>目录</sup>](#content)</h3></a>
 

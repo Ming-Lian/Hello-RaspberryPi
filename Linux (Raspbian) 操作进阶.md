@@ -113,7 +113,7 @@ sudo raspi-config
 
 <a name="change-source"><h3>更改软件源 [<sup>目录</sup>](#content)</h3></a>
 
-**由于树莓派软件官方源在国外，所以连接不稳定，且速度慢，所以安装初次进入系统后，一定要修改一下软件源。**
+**由于树莓派软件官方源(http://mirrordirector.raspbian.org)在国外，所以连接不稳定，且速度慢，所以安装初次进入系统后，一定要修改一下软件源。**
 
 国内软件源推荐（中科大）：http://mirrors.ustc.edu.cn/raspbian/raspbian/
 

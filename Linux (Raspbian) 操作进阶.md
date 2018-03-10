@@ -9,6 +9,9 @@
 - [更改软件源](#change-source)
 	- [2017-11-29-raspbian-stretch(基于Debian9)](#stretch)
 	- [2017-06-21-raspbian-jessie(基于Debian8)](#jessie)
+- [软件管理：APT/dpkg](#software-management)
+	- [APT](#apt)
+	- [dpkg](#dpkg)
 - [升级及报错处理](#update-and-solve-err)
 	- [update 出错](#update-err)
 	- [upgrade 出错](#upgrade-err)
@@ -113,11 +116,18 @@ sudo raspi-config
 
 <a name="change-source"><h3>更改软件源 [<sup>目录</sup>](#content)</h3></a>
 
-**由于树莓派软件官方源 (http://mirrordirector.raspbian.org) 在国外，所以连接不稳定，且速度慢，所以安装初次进入系统后，一定要修改一下软件源。**
+**由于树莓派软件官方源在国外，所以连接不稳定，且速度慢，所以安装初次进入系统后，一定要修改一下软件源。**
 
 国内软件源推荐（中科大）：http://mirrors.ustc.edu.cn/raspbian/raspbian/
 
-<a name="stretch"><h4>2017-11-29-raspbian-stretch(基于Debian9)</h4></a>
+查看当前所用的Debian版本：
+
+```
+lsb_release -a
+```
+直接看到 Codename
+
+<a name="stretch"><h4>raspbian-stretch (基于Debian9)</h4></a>
 
 更改/etc/apt/source.list文件：
 
@@ -133,7 +143,7 @@ deb-src http://mirrors.ustc.edu.cn/raspbian/raspbian/ stretch main contrib non-f
 deb http://mirrors.ustc.edu.cn/archive.raspberrypi.org/ stretch main ui
 ```
 
-<a name="jessie"><h4>2017-06-21-raspbian-jessie(基于Debian8)</h4></a>
+<a name="jessie"><h4>raspbian-jessie (基于Debian8)</h4></a>
 
 更改/etc/apt/source.list文件：
 
@@ -149,13 +159,48 @@ deb-src http://mirrors.ustc.edu.cn/raspbian/raspbian/ jessie main contrib non-fr
 deb http://mirrors.ustc.edu.cn/archive.raspberrypi.org/ jessie main ui
 ```
 
+<a name="software-management"><h3>软件管理：APT/dpkg [<sup>目录</sup>](#content)</h3></a>
+
+<a name="apt"><h4>APT: APT——Advanced Package Tool</h4></a>
+
+|	功能	|	具体语句	|
+|:---|:---|
+|	软件源设置	|	/etc/apt/sources.list	|
+|	更新软件源数据	|	apt-get update	|
+|	更新已安装软件	|	apt-get upgrade	|
+|	更新系统版本	|	apt-get dist-upgrade	|
+|	通过安装包或卸载包来修复依赖错误	|	apt-get -f install	|
+|	搜索软件源数据	|	apt-cache search foo	|
+|	解压安装软件包	|	apt-get install foo	|
+|	重新安装软件包	|	apt-get --reinstall install foo	|
+|	删除软件包释放的内容	|	apt-get remove foo	|
+|	卸载软件，同时清除该软件配置文件	|	apt-get --purge remove foo	|
+|	删除不需要的包	|	apt-get autoclean	|
+|	删除所有已下载的包	|	apt-get clean	|
+|	自动安装编译一软件所需要的包	|	apt-get build-dep foo	|
+
+<a name="dpkg"><h4>dpkg: package manager for Debian</h4></a>
+
+|	功能	|	具体语句	|
+|:---|:---|
+|	显示DEB包信息	|	dpkg -I xx.deb	|
+|	显示DEB包文件列表	|	dpkg -c xx.deb	|
+|	安装DEB包	|	dpkg -i xx.deb	|
+|	安装DEB包（指定根目录）	|	dpkg --root=<directory> -i xx.deb	|
+|	显示所有已安装软件	|	dpkg -l	|
+|	显示已安装包信息	|	dpkg -s foo	|
+|	显示已安装包文件列表	|	dpkg -L foo	|
+|	卸载包	|	dpkg -r foo	|
+|	卸载软件包并删除其配置文件	|	dpkg -P foo	|
+|	重新配置已安装程序	|	dpkg-reconfigure foo	|
+
 <a name="update-and-solve-err"><h3>升级及报错处理 [<sup>目录</sup>](#content)</h3></a>
 
 一般升级更新只需要运行以下两条命令即可：
 
 ```
-sudo apt-get update
-sudo apt-get upgrade
+sudo apt-get update # 更新软件源数据
+sudo apt-get upgrade # 更新已安装软件
 ```
 
 但是在实际操作过程中会出现一些问题：
@@ -293,6 +338,7 @@ sudo passwd root
 
 (4) [树莓派开箱配置之更改键盘布局](http://shumeipai.nxez.com/2017/11/13/raspberry-pi-change-the-keyboard-layout.html)
 
+(5) 
 (5) 小伊老师Linux课程课件
 
 (6) [Bash脚本实现批量作业并行化](https://www.linuxidc.com/Linux/2015-01/112363.htm)

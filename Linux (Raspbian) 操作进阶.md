@@ -29,6 +29,8 @@
 
 <h1 name="title">Linux进阶操作</h1>
 
+<p align="center"><img src=./picture/Linux-advanced-raspi-logo.jpg width="500"></p>
+
 <a name="install-lcd"><h3>安装LCD驱动 [<sup>目录</sup>](#content)</h3></a>
 
 <h4 name="lcd-old-version">2017-03-02-raspbian-jessie以前版本</h4>

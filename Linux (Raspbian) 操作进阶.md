@@ -1,6 +1,10 @@
 <a name="content">目录</a>
 
 [Linux (Raspbian) 进阶操作](#title)
+- [安装LCD驱动](#install-lcd)
+	- [2017-03-02-raspbian-jessie以前版本](#lcd-old-version)
+	- [2017-03-02-raspbian-jessie版本](#lcd-new-version)
+	- [LCD和HDMI相互切换](#switch-between-lcd-and-hdmi)
 - [安装中文语言包](#install-chinese)
 	- [CentOS (yum)](#centos)
 	- [Ubuntu (apt)](#debian)
@@ -24,6 +28,42 @@
 - [启用树莓派root用户](#active-root)
 
 <h1 name="title">Linux进阶操作</h1>
+
+<a name="install-lcd"><h3>安装LCD驱动 [<sup>目录</sup>](#content)</h3></a>
+
+<h4 name="lcd-old-version">2017-03-02-raspbian-jessie以前版本</h4>
+
+在/boot目录下，下载 **LCD-show-161112.tar.gz** : 
+
+`http://blog.lxx1.com/wp-content/uploads/2017/03/LCD-show-161112.tar.gz`
+
+然后解压，并赋予./LCD-show/LCD-show可执行权限
+
+```
+chmod +x ./LCD-show/LCD35-show
+```
+
+安装完成后，树莓派会重启，然后3.5寸屏幕上就可以正常显示了。
+
+<h4 name="lcd-new-version">2017-03-02-raspbian-jessie版本</h4>
+
+安装过程同上，安装包地址：
+
+`wget http://blog.lxx1.com/wp-content/uploads/2017/03/LCD-show-170309.tar.gz`
+
+<h4 name="switch-between-lcd-and-hdmi">LCD和HDMI相互切换</h4>
+
+在正常使用LCD的情况下，外接HDMI是没有显示的，如需启用HDMI输出，需执行以下命令，树莓派会自动重启。再等待约30秒，HDMI显示屏开始显示。
+
+```
+./LCD-show/LCD-hdmi
+```
+
+如需切换回LCD显示方式，则需执行以下命令：
+
+```
+./LCD-show/LCD35-show
+```
 
 <a name="install-chinese"><h3>安装中文语言包 [<sup>目录</sup>](#content)</h3></a>
 
@@ -330,17 +370,20 @@ sudo passwd root
 
 参考资料：
 
-(1) [ubuntu 16.04 英文版命令行安装中文语言包](http://blog.csdn.net/sweettool/article/details/70224459)
+(1) [Raspberry 3.5inch RPi LCD-4](http://blog.lxx1.com/2457/raspberry-3-5inch-rpi-lcd-4)
 
-(2) [ubuntu16.4安装中文输入法](https://www.cnblogs.com/zhaopengcheng/p/6040605.html)
+(2) [ubuntu 16.04 英文版命令行安装中文语言包](http://blog.csdn.net/sweettool/article/details/70224459)
 
-(3) [如何让树莓派显示中文？](http://shumeipai.nxez.com/2016/03/13/how-to-make-raspberry-pi-display-chinese.html)
+(3) [ubuntu16.4安装中文输入法](https://www.cnblogs.com/zhaopengcheng/p/6040605.html)
 
-(4) [树莓派开箱配置之更改键盘布局](http://shumeipai.nxez.com/2017/11/13/raspberry-pi-change-the-keyboard-layout.html)
+(4) [如何让树莓派显示中文？](http://shumeipai.nxez.com/2016/03/13/how-to-make-raspberry-pi-display-chinese.html)
 
-(5) 
-(5) 小伊老师Linux课程课件
+(5) [树莓派开箱配置之更改键盘布局](http://shumeipai.nxez.com/2017/11/13/raspberry-pi-change-the-keyboard-layout.html)
 
-(6) [Bash脚本实现批量作业并行化](https://www.linuxidc.com/Linux/2015-01/112363.htm)
+(6) [树莓派3B+ 软件源更改](#http://blog.csdn.net/kxwinxp/article/details/78370980)
 
-(7) [树莓派 - 修改pi账号密码,开启root账号](http://blog.csdn.net/yoie01/article/details/45115067)
+(7) 小伊老师Linux课程课件
+
+(8) [Bash脚本实现批量作业并行化](https://www.linuxidc.com/Linux/2015-01/112363.htm)
+
+(9) [树莓派 - 修改pi账号密码,开启root账号](http://blog.csdn.net/yoie01/article/details/45115067)

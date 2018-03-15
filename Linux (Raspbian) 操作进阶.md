@@ -26,6 +26,7 @@
 	- [最简单的并行化方法：&+wait](#simplest-wait)
 - [解压](#decompress)
 - [启用树莓派root用户](#active-root)
+- [搭建树莓派Linux服务器](#setup-linux-server)
 
 <h1 name="title">Linux进阶操作</h1>
 
@@ -368,6 +369,30 @@ sudo passwd root
 ```
 
 执行此命令后系统会提示输入两遍的root密码，输入你想设的密码即可
+
+<a name="setup-linux-server"><h3>搭建树莓派Linux服务器 [<sup>目录</sup>](#content)</h3></a>
+
+首先，你需要一根网线，将树莓派连接到外网
+
+然后，开启树莓派的ssh服务
+
+```
+$ sudo raspi-config
+```
+
+进入设置界面后选择：`Advanced Options` => `SSH` => `enable`
+
+接着查看你的树莓派当前被分配的ip
+
+```
+$ ifconfig -a
+```
+
+查看命令输出的头几行的其中一项"inet addr"就可以知道ip值了
+
+现在Linux服务器就搭建好了，你只需要在你的电脑上安装上ssh终端工具即可登录到该服务器，是不是太简单了
+
+
 
 
 参考资料：

@@ -382,7 +382,7 @@ sudo passwd root
 
 (5) [树莓派开箱配置之更改键盘布局](http://shumeipai.nxez.com/2017/11/13/raspberry-pi-change-the-keyboard-layout.html)
 
-(6) [树莓派3B+ 软件源更改](#http://blog.csdn.net/kxwinxp/article/details/78370980)
+(6) [树莓派3B+ 软件源更改](http://blog.csdn.net/kxwinxp/article/details/78370980)
 
 (7) 小伊老师Linux课程课件
 

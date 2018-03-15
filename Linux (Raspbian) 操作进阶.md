@@ -27,6 +27,7 @@
 - [解压](#decompress)
 - [启用树莓派root用户](#active-root)
 - [搭建树莓派Linux服务器](#setup-linux-server)
+- [解决Secure SSH Client登录服务器失败](#solve-login-err-use-sshClient)
 
 <h1 name="title">Linux进阶操作</h1>
 
@@ -392,7 +393,32 @@ $ ifconfig -a
 
 现在Linux服务器就搭建好了，你只需要在你的电脑上安装上ssh终端工具即可登录到该服务器，是不是太简单了
 
+<a name="solve-login-err-use-sshClient"><h3>解决Secure SSH Client登录服务器失败 [<sup>目录</sup>](#content)</h3></a>
 
+登录失败报错信息
+>Server responded"Algorithm negotiation failed"
+Key exchange with the remote host failed. This can happen for
+example computer does not support the selected  
+algorthms.
+
+登录失败原因：
+
+> Because i had past updated server, it’s that means i had updated the sshd algorithm negotiation on server meanwhile, but the sshd algorithm negotiation in client is the old, so server cannot compatible the algorithm negotiation from client.
+
+解决方法：
+
+在/etc/ssh/sshd_config文件中添加以下内容
+
+```
+Ciphers aes128-cbc,aes192-cbc,aes256-cbc,aes128-ctr,aes192-ctr,aes256-ctr,3des-cbc,arcfour128,arcfour256,arcfour,blowfish-cbc,cast128-cbc  
+MACs hmac-md5,hmac-sha1,umac-64@openssh.com,hmac-ripemd160,hmac-sha1-96,hmac-md5-96  
+KexAlgorithms diffie-hellman-group1-sha1,diffie-hellman-group14-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group1-sha1,curve25519-sha256@libssh.org  
+```
+重启sshd服务后，即可正常连接:
+
+```
+sudo /etc/init.d/ssh restart
+```
 
 
 参考资料：
@@ -414,3 +440,5 @@ $ ifconfig -a
 (8) [Bash脚本实现批量作业并行化](https://www.linuxidc.com/Linux/2015-01/112363.htm)
 
 (9) [树莓派 - 修改pi账号密码,开启root账号](http://blog.csdn.net/yoie01/article/details/45115067)
+
+(10) [Ubuntu SSH Algorithm negotiation failed](http://chenqinfeng.com/2016/02/19/Ubuntu%20SSH%20Algorithm%20negotiation%20failed/)

@@ -44,3 +44,15 @@ $ groups
 
 <a name="bioinfo-course"><h3>针对《生物信息学应用》课程的使用说明 [<sup>目录</sup>](#content)</h3></a>
 
+服务器IP在微信群里发布，如果IP失效，请向管理员索要新IP
+
+ssh终端登录服务器，端口为22，即ssh终端默认端口，不需要修改
+
+数据库文件的目录为`/var/www/bioinfo-course`，请在该文件夹下新建一个属于自己的文件夹，并修改新建文件夹的权限，去除组内其他用户的写权限
+
+```
+$ mkdir /var/www/bioinfo-course/your_new_dir
+$ chmod g-w /var/www/bioinfo-course/your_new_dir
+```
+
+要用浏览器访问自己目录下的html等文件，请在浏览器地址栏输入：`服务器IP:服务器web服务端口(9000)/bioinfo-course/your_new_dir/your_file`

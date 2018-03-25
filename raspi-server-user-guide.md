@@ -10,7 +10,7 @@
 
 
 
-<h1>树莓派服务器使用说明</h1>
+<h1 name="title">树莓派服务器使用说明</h1>
 
 <a name="introduction"><h3>raspi-server简单介绍 [<sup>目录</sup>](#content)</h3>
 
@@ -20,7 +20,7 @@
 
 <a name="server-items"><h3>目前已经搭建的服务项目 [<sup>目录</sup>](#content)</h3></a>
 
-<a name=""><li>ssh远程登录服务</li></a>
+<a name="ssh"><li>ssh远程登录服务</li></a>
 
 可以用ssh终端登录服务器，前提是你已经有服务器的账号密码
 

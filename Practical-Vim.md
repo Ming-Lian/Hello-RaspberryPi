@@ -64,3 +64,12 @@ $ vim -u filename_vimrc
 <a name="mindmap"><h3>命令大全：mindmap [<sup>目录</sup>](#content)</h3></a>
 
 <p align="center"><img src=./picture/Practical-Vim-mindmap.jpg width=900 /></p>
+
+
+
+
+参考资料：
+
+(1) [Vi / Vim 初学者入门: vimrc在哪儿?](https://blog.easwy.com/archives/where-is-vimrc/)
+
+(2) 小伊老师Linux课件

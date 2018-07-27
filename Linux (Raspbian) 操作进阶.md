@@ -22,6 +22,7 @@
 - [文本处理双剑客: sed & AWK](#operate-txt)
 	- [sed](#sed)
 	- [AWK](#awk)
+- [硬链接与软链接](#hardlink-and-softlink)
 - [进程并行化](#parallel-process)
 	- [最简单的并行化方法：&+wait](#simplest-wait)
 - [解压](#decompress)
@@ -333,6 +334,46 @@ InputFile
 |RSTART|由match函数所匹配的字符串第一个位置|
 |SUBSEP|数组下标分隔符（默认值是\034）|
 
+<a name="hardlink-and-softlink"><h3>硬链接与软链接 [<sup>目录</sup>](#content)</h3></a>
+
+文件由两部分构成：文件数据 + 文件元数据
+
+**文件数据**：文件储存在硬盘上，硬盘的最小存储单位叫做”扇区”（Sector）。每个扇区储存512字节（相当于0.5KB）。操作系统读取硬盘的时候，不会一个个扇区地读取，这样效率太低，而是一次性连续读取多个扇区，即一次性读取一个”块”（block）。这种由多个扇区组成的”块”，是文件存取的最小单位。”块”的大小，最常见的是4KB，即连续八个 sector组成一个 block。
+
+**文件元数据**：文件数据都储存在”块”中，那么很显然，我们还必须找到一个地方储存文件的元信息，比如文件的创建者、文件的创建日期、文件的大小等等。这种储存文件元信息的区域就叫做inode，中文译名为”索引节点”。
+
+inode包含文件的元信息：
+
+> - 文件的字节数
+>
+> - 文件拥有者的User ID
+>
+> - 文件的Group ID
+>
+> - 文件的读、写、执行权限
+>
+> - 文件的时间戳，共有三个：ctime指inode上一次变动的时间，mtime指文件内容上一次变动的时间，atime指文件上一次打开的时间。
+>
+> - 链接数，即有多少文件名指向这个inode
+>
+> - 文件数据block的位置
+
+<p align="center"><img src=./picture/Linux-advanced-hardlinks-and-softlinks-1.png width=600 /></p>
+
+**Unix/Linux系统内部不使用文件名，而使用inode号码来识别文件**。对于系统来说，文件名只是inode号码便于识别的别称或者绰号。表面上，用户通过文件名，打开文件。
+
+实际上，系统内部这个过程分成三步：首先，系统找到这个文件名对应的inode号码；其次，通过inode号码，获取inode信息；最后，根据inode信息，找到文件数据所在的block，读出数据。
+
+**硬链接**：
+
+> 一般情况下，文件名和inode号码是”一一对应”关系，每个inode号码对应一个文件名。但是，Unix/Linux系统允许，多个文件名指向同一个inode号码。这意味着，可以用不同的文件名访问同样的内容；对文件内容进行修改，会影响到所有文件名；但是，删除一个文件名，不影响另一个文件名的访问。这种情况就被称为”硬链接”（hard link）。
+
+**软链接**：
+
+> 文件A和文件B的inode号码虽然不一样，但是文件A的内容是文件B的路径。读取文件A时，系统会自动将访问者导向文件B。因此，无论打开哪一个文件，最终读取的都是文件B。这时，文件A就称为文件B的”软链接”（soft link）或者”符号链接（symbolic link）。
+> 
+> 文件A依赖于文件B而存在，如果删除了文件B，打开文件A就会报错：”No such file or directory”。这是软链接与硬链接最大的不同：文件A指向文件B的文件名，而不是文件B的inode号码，文件B的inode”链接数”不会因此发生变化。
+
 <a name="parallel-process"><h3>进程并行化 [<sup>目录</sup>](#content)</h3></a>
 
 <a name="simplest-wait"><h4>最简单的并行化方法：&+wait [<sup>目录</sup>](#content)</h4></a>
@@ -437,8 +478,10 @@ sudo /etc/init.d/ssh restart
 
 (7) 小伊老师Linux课程课件
 
-(8) [Bash脚本实现批量作业并行化](https://www.linuxidc.com/Linux/2015-01/112363.htm)
+(8) [Linux节点理解](https://blog.csdn.net/jijiahao95/article/details/53398475)
 
-(9) [树莓派 - 修改pi账号密码,开启root账号](http://blog.csdn.net/yoie01/article/details/45115067)
+(9) [Bash脚本实现批量作业并行化](https://www.linuxidc.com/Linux/2015-01/112363.htm)
 
-(10) [Ubuntu SSH Algorithm negotiation failed](http://chenqinfeng.com/2016/02/19/Ubuntu%20SSH%20Algorithm%20negotiation%20failed/)
+(10) [树莓派 - 修改pi账号密码,开启root账号](http://blog.csdn.net/yoie01/article/details/45115067)
+
+(11) [Ubuntu SSH Algorithm negotiation failed](http://chenqinfeng.com/2016/02/19/Ubuntu%20SSH%20Algorithm%20negotiation%20failed/)

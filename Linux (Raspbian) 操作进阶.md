@@ -29,6 +29,11 @@
 - [启用树莓派root用户](#active-root)
 - [搭建树莓派Linux服务器](#setup-linux-server)
 - [解决Secure SSH Client登录服务器失败](#solve-login-err-use-sshClient)
+- [Shell编程](#shell-programing)
+	- [参数传递](#shell-programing-pass-parameters)
+		- [传统方法：使用$](#pass-parameters-use-doller)
+		- [使用getopt](#pass-parameters-use-getopt)
+		- [使用getopts](#pass-parameters-use-getopts)
 
 <h1 name="title">Linux进阶操作</h1>
 
@@ -461,6 +466,100 @@ KexAlgorithms diffie-hellman-group1-sha1,diffie-hellman-group14-sha1,diffie-hell
 sudo /etc/init.d/ssh restart
 ```
 
+<a name="shell-programing"><h2>Shell编程 [<sup>目录</sup>](#content)</h2></a>
+
+<a name="shell-programing-pass-parameters"><h3>参数传递 [<sup>目录</sup>](#content)</h3></a>
+
+<a name="pass-parameters-use-doller"><h4>传统方法：使用$ [<sup>目录</sup>](#content)</h4></a>
+
+在shell脚本中，命令$后加一些特殊的标记可以取脚本的传入参数，如$0取脚本输入的第一个参数，$1取第二个参数等：
+
+|	参数	|	描述	|
+|:---|:---|
+|	$0 	|	命令本身，类似c的argv[0]	|
+|	$1、$2……	|	第1个参数、第2个参数……	|
+|	$#	|	参数的个数，不包括$0	|
+|	$@	|	以列表的形式返回参数列表，不包括$0	|
+|	$?	|	最后运行的命令结束代码	|
+
+<a name="pass-parameters-use-getopt"><h4>使用getopt [<sup>目录</sup>](#content)</h4></a>
+
+getopt不是标准的unix命令，但它在大多数的发行版中都会带有，getopt虽然是带个get但此函数其实主要不是获取而是规范
+
+getopt后面接受-o选项表示程序可接受的短选项 如`-o ab:c::`，表示程序参数后面可接受的选项为`-a -b -c` 其中-a后面不接受参数，-b后面必须接受参数(:)，-c后面参数可选(::)
+
+getopt后面接受--long选项表示程序可接受的短选项 如`--long along,blong:,clong::`，长选项用逗号分隔开，后面接参数的标记号和短选项一致 
+
+在对参数进行解析前先通过getopt进行解析
+
+```
+ARGS=`getopt -o ab:c: --long along,blong:,clong: -- "$@"`
+#判断是否执行成功，没执行成功退出
+if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+#重新设置参数
+eval set -- "$ARGS"
+```
+
+进行参数解析
+
+```
+while true;do
+    case "$1" in
+        -a)
+            echo "a"
+            shift;;
+        -b) 
+            echo "b"
+            shift;;
+        -c) 
+            echo "c"
+            shift;;
+        --)
+            echo "--"
+            shift
+            break
+            ;;
+        *) 
+            echo "??"
+            shift
+            ;;
+    esac
+done
+```
+
+
+<a name="pass-parameters-use-getopts"><h4>使用getopts [<sup>目录</sup>](#content)</h4></a>
+
+```
+getopts [option[:]] [DESCPRITION] VARIABLE
+```
+
+> option：表示为某个脚本可以使用的选项
+> 
+> `":"`：如果某个选项（option）后面出现了冒号（":"），则表示这个选项后面可以接参数（即一段描述信息DESCPRITION）
+> 
+> VARIABLE：表示将某个选项保存在变量VARIABLE中
+
+```
+while getopts ":a:b:c:" opt
+do
+    case $opt in
+        a)
+        echo "参数a的值$OPTARG"
+        ;;
+        b)
+        echo "参数b的值$OPTARG"
+        ;;
+        c)
+        echo "参数c的值$OPTARG"
+        ;;
+        ?)
+        echo "未知参数"
+        exit 1;;
+    esac
+done
+```
+
 
 参考资料：
 
@@ -485,3 +584,7 @@ sudo /etc/init.d/ssh restart
 (10) [树莓派 - 修改pi账号密码,开启root账号](http://blog.csdn.net/yoie01/article/details/45115067)
 
 (11) [Ubuntu SSH Algorithm negotiation failed](http://chenqinfeng.com/2016/02/19/Ubuntu%20SSH%20Algorithm%20negotiation%20failed/)
+
+(12) [shell学习 - 处理脚本的多参数输入](https://blog.csdn.net/czyt1988/article/details/79110450)
+
+(13) [shell中脚本参数传递的两种方式](https://blog.csdn.net/sinat_36521655/article/details/79296181)

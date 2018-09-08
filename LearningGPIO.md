@@ -5,7 +5,7 @@
 - [01-使用GPIO接口控制发光二极管闪烁](#01-shrink-led)
 - [02-GPIO控制LED亮度，制作呼吸灯效果](#02-control-led-brightness)
 - [03-GPIO控制RGB彩色LED灯](#03-control-rgb-led)
-
+- [04-使用按钮](#04-button)
 
 
 <h1 name="title">树莓派GPIO入门</h1>
@@ -256,7 +256,80 @@ pwmB.stop()
 RPi.GPIO.cleanup()
 ```
 
+<a name="04-button"><h2>04-使用按钮 [<sup>目录</sup>](#content)</h2></a>
 
+用3个按钮来手动控制彩色LED灯分别发出红，绿，蓝光并可以同时按下不同按钮以显示混合颜色的光。
+
+<p align="center"><img src=./picture/LearningGPIO-04-1.gif width=500 /></p>
+
+<p align="center">效果图</p>
+
+<p align="center"><img src=./picture/LearningGPIO-04-2.jpg width=500 /></p>
+
+<p align="center">所需硬件</p>
+
+<p align="center"><img src=./picture/LearningGPIO-04-3.png width=500 /></p>
+
+<p align="center">硬件连接方式与原理</p>
+
+**Python代码：**
+
+```
+#!/usr/bin/env python
+# encoding: utf-8
+
+import RPi.GPIO
+import time
+
+R,G,B=15,18,14
+
+# 按钮输出针脚连接的GPIO口
+btnR, btnG, btnB=21,20,16
+
+RPi.GPIO.setmode(RPi.GPIO.BCM)
+
+RPi.GPIO.setup(R, RPi.GPIO.OUT)
+RPi.GPIO.setup(G, RPi.GPIO.OUT)
+RPi.GPIO.setup(B, RPi.GPIO.OUT)
+
+# 按钮连接的GPIO针脚的模式设置为信号输入模式，同时默认拉高GPIO口电平，
+# 当GND没有被接通时，GPIO口处于高电平状态，取的的值为1
+# 注意到这是一个可选项，如果不在程序里面设置，通常的做法是通过一个上拉电阻连接到VCC上使之默认保持高电平
+RPi.GPIO.setup(btnR, RPi.GPIO.IN, pull_up_down=RPi.GPIO.PUD_UP)
+RPi.GPIO.setup(btnG, RPi.GPIO.IN, pull_up_down=RPi.GPIO.PUD_UP)
+RPi.GPIO.setup(btnB, RPi.GPIO.IN, pull_up_down=RPi.GPIO.PUD_UP)
+
+try:
+
+    RPi.GPIO.output(R, True)
+    RPi.GPIO.output(G, True)
+    RPi.GPIO.output(B, True)
+    while True:
+        time.sleep(0.01)
+        
+        # 检测按钮1是否被按下，如果被按下(低电平)，则亮红灯(输出低电平)，否则关红灯
+        if (RPi.GPIO.input(btnR) == 0):
+            RPi.GPIO.output(R, False)
+        else:
+            RPi.GPIO.output(R, True)
+        
+        # 检测按钮2是否被按下，如果被按下(低电平)，则亮绿灯(输出低电平)，否则关绿灯
+        if (RPi.GPIO.input(btnG) == 0):
+            RPi.GPIO.output(G, False)
+        else:
+            RPi.GPIO.output(G, True)
+        
+        # 检测按钮3是否被按下，如果被按下(低电平)，则亮蓝灯(输出低电平)，否则关蓝灯
+        if (RPi.GPIO.input(btnB) == 0):
+            RPi.GPIO.output(B, False)
+        else:
+            RPi.GPIO.output(B, True)
+
+except KeyboardInterrupt:
+    pass
+
+RPi.GPIO.cleanup()
+```
 
 
 

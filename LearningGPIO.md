@@ -23,7 +23,7 @@
 <table>
 <tbody>
 <tr>
-	<td>最终效果：</td>
+	<td>最终效果</td>
 	<td>所需材料</td>
 </tr>
 <tr>
@@ -146,12 +146,12 @@ RPi.GPIO.cleanup()
 <table>
 <tbody>
 <tr>
-	<td>最终效果：</td>
+	<td>最终效果</td>
 	<td>所需材料</td>
 </tr>
 <tr>
-	<td><p align="center"><img src=./picture/LearningGPIO-03-1.gif height=700 /></p></td>
-	<td><p align="center"><img src=./picture/LearningGPIO-03-2.jpg height=700 /></p></td>
+	<td><p align="center"><img src=./picture/LearningGPIO-03-1.gif height=600 /></p></td>
+	<td><p align="center"><img src=./picture/LearningGPIO-03-2.jpg height=600 /></p></td>
 </tr>
 </tbody>
 </table>

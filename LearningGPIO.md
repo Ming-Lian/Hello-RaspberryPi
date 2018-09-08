@@ -4,7 +4,7 @@
 - [前言：GPIO引脚说明](#introduction-to-gpio)
 - [01-使用GPIO接口控制发光二极管闪烁](#01-shrink-led)
 - [02-GPIO控制LED亮度，制作呼吸灯效果](#02-control-led-brightness)
-
+- [03-GPIO控制RGB彩色LED灯](#03-control-rgb-led)
 
 
 
@@ -141,7 +141,20 @@ RPi.GPIO.cleanup()
 > - 通过设置较高的频率使LED灯看起来不闪烁
 > - 通过调整占空比，调整LED灯的亮度，占空比越大说明：开灯持续的时间长度和关灯持续的时间长度的比例越大，LED灯越亮，反之越暗
 
+<a name="03-control-rgb-led"><h2>03-GPIO控制RGB彩色LED灯 [<sup>目录</sup>](#content)</h2></a>
 
+<table>
+<tbody>
+<tr>
+	<td>最终效果：</td>
+	<td>所需材料</td>
+</tr>
+<tr>
+	<td><p align="center"><img src=./picture/LearningGPIO-03-1.gif height=700 /></p></td>
+	<td><p align="center"><img src=./picture/LearningGPIO-03-2.jpg height=700 /></p></td>
+</tr>
+</tbody>
+</table>
 
 
 

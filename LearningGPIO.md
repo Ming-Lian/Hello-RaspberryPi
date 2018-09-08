@@ -156,7 +156,105 @@ RPi.GPIO.cleanup()
 </tbody>
 </table>
 
+**原理说明：**
 
+这个RGB彩色LED里其实有3个灯，分别是红灯绿灯和蓝灯。控制这三个灯分别发出不同强度的光，混合起来就能发出各种颜色的光了。 LED灯上的4根引脚分别是VCC，R，G，B。 VCC需要接到电源正极。我们把它连到树莓派的5V引脚上。 R,G,B分别是红绿蓝灯的负极接口。我们把它们连接到树莓派的GPIO口上。 然后跟前一篇一样，使用PWM来控制3个小灯的明暗程度即可混合出各种不同颜色的光。
+
+**硬件连接：**
+
+<p align="center"><img src=./picture/LearningGPIO-03-3.png height=500 /></p>
+
+<p align="center"><img src=./picture/LearningGPIO-03-4.png height=500 /></p>
+
+**Python代码：**
+
+```
+#!/usr/bin/env python
+# encoding: utf-8
+
+import RPi.GPIO
+import time
+
+R,G,B=15,18,14
+
+RPi.GPIO.setmode(RPi.GPIO.BCM)
+
+RPi.GPIO.setup(R, RPi.GPIO.OUT)
+RPi.GPIO.setup(G, RPi.GPIO.OUT)
+RPi.GPIO.setup(B, RPi.GPIO.OUT)
+
+pwmR = RPi.GPIO.PWM(R, 70)
+pwmG = RPi.GPIO.PWM(G, 70)
+pwmB = RPi.GPIO.PWM(B, 70)
+
+pwmR.start(0)
+pwmG.start(0)
+pwmB.start(0)
+
+try:
+
+    t = 0.4
+    while True:
+        # 红色灯全亮，蓝灯，绿灯全暗（红色）
+        pwmR.ChangeDutyCycle(0)
+        pwmG.ChangeDutyCycle(100)
+        pwmB.ChangeDutyCycle(100)
+        time.sleep(t)
+        
+        # 绿色灯全亮，红灯，蓝灯全暗（绿色）
+        pwmR.ChangeDutyCycle(100)
+        pwmG.ChangeDutyCycle(0)
+        pwmB.ChangeDutyCycle(100)
+        time.sleep(t)
+        
+        # 蓝色灯全亮，红灯，绿灯全暗（蓝色）
+        pwmR.ChangeDutyCycle(100)
+        pwmG.ChangeDutyCycle(100)
+        pwmB.ChangeDutyCycle(0)
+        time.sleep(t)
+        
+        # 红灯，绿灯全亮，蓝灯全暗（黄色）
+        pwmR.ChangeDutyCycle(0)
+        pwmG.ChangeDutyCycle(0)
+        pwmB.ChangeDutyCycle(100)
+        time.sleep(t)
+        
+        # 红灯，蓝灯全亮，绿灯全暗（洋红色）
+        pwmR.ChangeDutyCycle(0)
+        pwmG.ChangeDutyCycle(100)
+        pwmB.ChangeDutyCycle(0)
+        time.sleep(t)
+        
+        # 绿灯，蓝灯全亮，红灯全暗（青色）
+        pwmR.ChangeDutyCycle(100)
+        pwmG.ChangeDutyCycle(0)
+        pwmB.ChangeDutyCycle(0)
+        time.sleep(t)
+        
+        # 红灯，绿灯，蓝灯全亮（白色）
+        pwmR.ChangeDutyCycle(0)
+        pwmG.ChangeDutyCycle(0)
+        pwmB.ChangeDutyCycle(0)
+        time.sleep(t)
+        
+        # 调整红绿蓝LED的各个颜色的亮度组合出各种颜色
+        for r in xrange (0, 101, 20):
+            pwmR.ChangeDutyCycle(r)
+            for g in xrange (0, 101, 20):
+                pwmG.ChangeDutyCycle(g)
+                for b in xrange (0, 101, 20):
+                    pwmB.ChangeDutyCycle(b)
+                    time.sleep(0.01)
+
+except KeyboardInterrupt:
+    pass
+
+pwmR.stop()
+pwmG.stop()
+pwmB.stop()
+
+RPi.GPIO.cleanup()
+```
 
 
 

@@ -6,7 +6,7 @@
 - [02-GPIO控制LED亮度，制作呼吸灯效果](#02-control-led-brightness)
 - [03-GPIO控制RGB彩色LED灯](#03-control-rgb-led)
 - [04-使用按钮](#04-button)
-
+- [05-驱动数码管显示数字](#05-digitron)
 
 <h1 name="title">树莓派GPIO入门</h1>
 
@@ -331,7 +331,256 @@ except KeyboardInterrupt:
 RPi.GPIO.cleanup()
 ```
 
+<a name="05-digitron"><h2>05-驱动数码管显示数字 [<sup>目录</sup>](#content)</h2></a>
 
+用树莓派的GPIO口驱动数码管来显示数字，进而制作一个简单的电子钟，通过按钮来切换显示时间或日期
+
+<p align="center"><img src=./picture/LearningGPIO-05-1.jpg width=500 /></p>
+
+**原理说明**
+
+标准的数码管从显示内容上分7段和8段数码管两种。8段比7段多一个右下角的小数点。还有一些其他特殊的如可以显示米字形的数码管不在本文讨论范围内，其实原理都是一样的。
+
+8段数码管由8个发光二极管组成，其中7个用于组成数字，1个用于显示小数点。每一根的编号如下图的右上角所示(A-G,DP)。
+
+<p align="center"><img src=./picture/LearningGPIO-05-2.jpg width=500 /></p>
+
+数码管从电源极性上分**共阳**和**共阴**两种。
+
+解释一下，如果数码管上每一个独立的发光二极管都单独引出两根引脚，一根接正极(阳)一根接负极(阴)，那么一个8段数码管就需要16根引脚来控制。但其实这8段数码管完全可以在内部共用一个阳级，只控制各段发光二极管的阴级联通即可，这就是共阳。反之亦然，叫共阴。共阳或共阴的每个8段数码管只需要引出9个引脚，1个阳(阴)级接到树莓派vcc(gnd)上，另外8个分别连到gpio口上，通过控制io口高低电平即可显示所需数字。比如一只共阳数码管想显示数字1，看LED编号图可知需要点亮b段和c段，其他全灭。那么连到共阳端引脚的io口输出高电平，连到引脚b、c的io口输出低电平，连到引脚a、d、e、f、g、dp的io口均输出高电平即可。写成代码就是：
+
+```
+# 定义各段发光二极管对应的GPIO口
+LED_A = 26
+LED_B = 19
+LED_C = 13
+LED_D = 6
+LED_E = 5
+LED_F = 11
+LED_G = 9
+LED_DP = 10
+
+# 定义数码管共阳极对应的GPIO口
+VCC = 12
+
+# 避免闪烁，在输出数字字形信号前先拉低共阳端，关闭显示
+RPi.GPIO.output(VCC, False)
+
+# 输出数字1的字形信号
+RPi.GPIO.output(LED_A, True)
+RPi.GPIO.output(LED_B, False)
+RPi.GPIO.output(LED_C, False)
+RPi.GPIO.output(LED_D, True)
+RPi.GPIO.output(LED_E, True)
+RPi.GPIO.output(LED_F, True)
+RPi.GPIO.output(LED_G, True)
+RPi.GPIO.output(LED_DP, True)
+
+# 最后拉高共阳段，显示数字
+RPi.GPIO.output(VCC, True)
+```
+
+本文使用的数码管是8段共阳4位(4个数字)数码管，型号是F3461BH。上面说了共阳数码管每个数字需要9个引脚来控制，那么4个数字就需要36个引脚吗？显然不现实，树莓派的io口也完全不够用。这就引出另一个概念，**静态显示**和**动态扫描显示**。
+
+**静态显示**：就是前面说的每一个数字需要占用8个io口，每多一个数字就需要额外的8个io口，如果数字位数不多，io口够用的话，这样做完全没问题。实际应用中往往需要显示多个数字，io口基本上是不够用的。这就需要动态扫描显示了。
+
+> 数码管动态显示接口是单片机中应用最为广泛的一种显示方式之一，动态驱动是将所有数码管的8个显示笔划"a,b,c,d,e,f,g,dp"的同名端连在一起引出8个引脚，每个数字再单独引出共阳(阴)端，这样总引脚数就只要8 + 数字个数即可，本文使用的8段4位数码管正是引出了12个引脚。至于哪个引脚对应哪一段，哪几个引脚分别对应各数字的共阳(阴)端，就需要商家提供电路图了。当然也可以自己慢慢试，这不在本文讨论范围，大家可以自己摸索。
+> 
+> 当树莓派输出8个段信号时，所有数码管都会接收到相同的信号，但究竟是哪个数码管会显示出字形，取决于这个数码管对应的共阳(阴)极(后统称位选端)有无导通。所以我们只要将需要显示的数码管的位选端选通，该位就显示出字形，没有选通的数码管就不会亮。通过分时轮流控制各个数码管的的位选端，就使各个数码管轮流受控显示，这就是动态驱动。
+> 
+> 在轮流显示过程中，每位数码管的点亮时间为1～2ms，由于人的视觉暂留现象及发光二极管的余辉效应，尽管实际上各位数码管并非同时点亮，但只要扫描的速度足够快，给人的印象就是一组稳定的显示数据，不会有闪烁感，动态显示的效果和静态显示是一样的，能够节省大量的I/O端口，而且功耗更低。
+
+<p align="center"><img src=./picture/LearningGPIO-05-3.png width=500 /></p>
+
+**Python代码**
+
+```
+#!/usr/bin/env python
+# encoding: utf-8
+
+import RPi.GPIO
+import time
+
+# 定义单个数码管各段led对应的GPIO口
+LED_A = 26
+LED_B = 19
+LED_C = 13
+LED_D = 6
+LED_E = 5
+LED_F = 11
+LED_G = 9
+LED_DP = 10
+
+# 定义1到4号数码管阳极对应的GPIO口
+DIGIT1 = 12
+DIGIT2 = 16
+DIGIT3 = 20
+DIGIT4 = 21
+
+# 定义按钮输入的GPIO口
+btn = 27
+
+RPi.GPIO.setmode(RPi.GPIO.BCM)
+
+RPi.GPIO.setup(LED_A, RPi.GPIO.OUT)
+RPi.GPIO.setup(LED_B, RPi.GPIO.OUT)
+RPi.GPIO.setup(LED_C, RPi.GPIO.OUT)
+RPi.GPIO.setup(LED_D, RPi.GPIO.OUT)
+RPi.GPIO.setup(LED_E, RPi.GPIO.OUT)
+RPi.GPIO.setup(LED_F, RPi.GPIO.OUT)
+RPi.GPIO.setup(LED_G, RPi.GPIO.OUT)
+RPi.GPIO.setup(LED_DP, RPi.GPIO.OUT)
+RPi.GPIO.setup(DIGIT1, RPi.GPIO.OUT)
+RPi.GPIO.setup(DIGIT2, RPi.GPIO.OUT)
+RPi.GPIO.setup(DIGIT3, RPi.GPIO.OUT)
+RPi.GPIO.setup(DIGIT4, RPi.GPIO.OUT)
+
+RPi.GPIO.output(DIGIT1, True)
+RPi.GPIO.output(DIGIT2, True)
+RPi.GPIO.output(DIGIT3, True)
+RPi.GPIO.output(DIGIT4, True)
+
+RPi.GPIO.setup(btn, RPi.GPIO.IN, pull_up_down=RPi.GPIO.PUD_UP)
+
+# 指定no(1-4)号数码管显示数字num(0-9)，第三个参数是显示不显示小数点（true/false）
+def showDigit(no, num, showDotPoint):
+    # 先将正极拉低，关掉显示
+    RPi.GPIO.output(DIGIT1, False)
+    RPi.GPIO.output(DIGIT2, False)
+    RPi.GPIO.output(DIGIT3, False)
+    RPi.GPIO.output(DIGIT4, False)
+    
+    if (num == 0) :
+        RPi.GPIO.output(LED_A, False)
+        RPi.GPIO.output(LED_B, False)
+        RPi.GPIO.output(LED_C, False)
+        RPi.GPIO.output(LED_D, False)
+        RPi.GPIO.output(LED_E, False)
+        RPi.GPIO.output(LED_F, False)
+        RPi.GPIO.output(LED_G, True)
+        RPi.GPIO.output(LED_DP, not showDotPoint)
+    elif (num == 1) :
+        RPi.GPIO.output(LED_A, True)
+        RPi.GPIO.output(LED_B, False)
+        RPi.GPIO.output(LED_C, False)
+        RPi.GPIO.output(LED_D, True)
+        RPi.GPIO.output(LED_E, True)
+        RPi.GPIO.output(LED_F, True)
+        RPi.GPIO.output(LED_G, True)
+        RPi.GPIO.output(LED_DP, not showDotPoint)
+    elif (num == 2) :
+        RPi.GPIO.output(LED_A, False)
+        RPi.GPIO.output(LED_B, False)
+        RPi.GPIO.output(LED_C, True)
+        RPi.GPIO.output(LED_D, False)
+        RPi.GPIO.output(LED_E, False)
+        RPi.GPIO.output(LED_F, True)
+        RPi.GPIO.output(LED_G, False)
+        RPi.GPIO.output(LED_DP, not showDotPoint)
+    elif (num == 3) :
+        RPi.GPIO.output(LED_A, False)
+        RPi.GPIO.output(LED_B, False)
+        RPi.GPIO.output(LED_C, False)
+        RPi.GPIO.output(LED_D, False)
+        RPi.GPIO.output(LED_E, True)
+        RPi.GPIO.output(LED_F, True)
+        RPi.GPIO.output(LED_G, False)
+        RPi.GPIO.output(LED_DP, not showDotPoint)
+    elif (num == 4) :
+        RPi.GPIO.output(LED_A, True)
+        RPi.GPIO.output(LED_B, False)
+        RPi.GPIO.output(LED_C, False)
+        RPi.GPIO.output(LED_D, True)
+        RPi.GPIO.output(LED_E, True)
+        RPi.GPIO.output(LED_F, False)
+        RPi.GPIO.output(LED_G, False)
+        RPi.GPIO.output(LED_DP, not showDotPoint)
+    elif (num == 5) :
+        RPi.GPIO.output(LED_A, False)
+        RPi.GPIO.output(LED_B, True)
+        RPi.GPIO.output(LED_C, False)
+        RPi.GPIO.output(LED_D, False)
+        RPi.GPIO.output(LED_E, True)
+        RPi.GPIO.output(LED_F, False)
+        RPi.GPIO.output(LED_G, False)
+        RPi.GPIO.output(LED_DP, not showDotPoint)
+    elif (num == 6) :
+        RPi.GPIO.output(LED_A, False)
+        RPi.GPIO.output(LED_B, True)
+        RPi.GPIO.output(LED_C, False)
+        RPi.GPIO.output(LED_D, False)
+        RPi.GPIO.output(LED_E, False)
+        RPi.GPIO.output(LED_F, False)
+        RPi.GPIO.output(LED_G, False)
+        RPi.GPIO.output(LED_DP, not showDotPoint)
+    elif (num == 7) :
+        RPi.GPIO.output(LED_A, False)
+        RPi.GPIO.output(LED_B, False)
+        RPi.GPIO.output(LED_C, False)
+        RPi.GPIO.output(LED_D, True)
+        RPi.GPIO.output(LED_E, True)
+        RPi.GPIO.output(LED_F, True)
+        RPi.GPIO.output(LED_G, True)
+        RPi.GPIO.output(LED_DP, not showDotPoint)
+    elif (num == 8) :
+        RPi.GPIO.output(LED_A, False)
+        RPi.GPIO.output(LED_B, False)
+        RPi.GPIO.output(LED_C, False)
+        RPi.GPIO.output(LED_D, False)
+        RPi.GPIO.output(LED_E, False)
+        RPi.GPIO.output(LED_F, False)
+        RPi.GPIO.output(LED_G, False)
+        RPi.GPIO.output(LED_DP, not showDotPoint)
+    elif (num == 9) :
+        RPi.GPIO.output(LED_A, False)
+        RPi.GPIO.output(LED_B, False)
+        RPi.GPIO.output(LED_C, False)
+        RPi.GPIO.output(LED_D, False)
+        RPi.GPIO.output(LED_E, True)
+        RPi.GPIO.output(LED_F, False)
+        RPi.GPIO.output(LED_G, False)
+        RPi.GPIO.output(LED_DP, not showDotPoint)
+    
+    if (no == 1) :
+        RPi.GPIO.output(DIGIT1, True)
+    elif (no == 2) :
+        RPi.GPIO.output(DIGIT2, True)
+    elif (no == 3) :
+        RPi.GPIO.output(DIGIT3, True)
+    elif (no == 4) :
+        RPi.GPIO.output(DIGIT4, True)
+
+try:
+    t=0.005
+    while True:
+        # 按钮按下时显示日期，否则显示时间
+        # 为了区别左右的数字，让第二个数码管的小数点显示出来
+        #（本来应该是一个冒号，我们这个数码管没有，就用小数点代替了）
+        if (RPi.GPIO.input(btn) == 1):
+            time.sleep(t)
+            showDigit(1, int(time.strftime("%H",time.localtime(time.time()))) / 10, False)
+            time.sleep(t)
+            showDigit(2, int(time.strftime("%H",time.localtime(time.time()))) % 10, True)
+            time.sleep(t)
+            showDigit(3, int(time.strftime("%M",time.localtime(time.time()))) / 10, False)
+            time.sleep(t)
+            showDigit(4, int(time.strftime("%M",time.localtime(time.time()))) % 10, False)
+        else:
+            time.sleep(t)
+            showDigit(1, int(time.strftime("%m",time.localtime(time.time()))) / 10, False)
+            time.sleep(t)
+            showDigit(2, int(time.strftime("%m",time.localtime(time.time()))) % 10, True)
+            time.sleep(t)
+            showDigit(3, int(time.strftime("%d",time.localtime(time.time()))) / 10, False)
+            time.sleep(t)
+            showDigit(4, int(time.strftime("%d",time.localtime(time.time()))) % 10, False)
+            
+except KeyboardInterrupt:
+    pass
+
+# 最后清理GPIO口（不做也可以，建议每次程序结束时清理一下，好习惯）
+RPi.GPIO.cleanup()
+```
 
 ---
 

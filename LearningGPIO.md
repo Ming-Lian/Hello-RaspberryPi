@@ -7,6 +7,7 @@
 - [03-GPIO控制RGB彩色LED灯](#03-control-rgb-led)
 - [04-使用按钮](#04-button)
 - [05-驱动数码管显示数字](#05-digitron)
+- [06-用超声波传感器测量距离](#06-measure-distance-by-ultrasonic-sensor)
 
 <h1 name="title">树莓派GPIO入门</h1>
 
@@ -582,6 +583,66 @@ except KeyboardInterrupt:
 RPi.GPIO.cleanup()
 ```
 
+<a name="06-measure-distance-by-ultrasonic-sensor"><h2>06-用超声波传感器测量距离 [<sup>目录</sup>](#content)</h2></a>
+
+<p align="center"><img src=./picture/LearningGPIO-06-1.jpg width=500 /></p>
+
+上图所示的传感器有一个发射器和一个接收器，该传感器在400cm的范围之内的测距精度接近±3cm。
+
+该传感器引出了4个引脚：接地引脚、回波引脚、触发引脚和供电引脚。接地引脚和5V供电引脚直接与树莓派相连。当我们从树莓派向传感器的触发引脚给出一个输入时，发射器就会发射声波脉冲，发出的声波脉冲被固体或物体表面发射回来后，我们就可以从回波引脚接受到回波脉冲。然后可以计算回波的往返时间，之后就可以算出距离了
+
+超声波传感器需要在5V的电源下工作，树莓派上正好有5V的供电引脚。作为回应，超声波传感器会产生5V的回波信号给树莓派 —— 我们知道树莓派需要在GPIO上加上3.3V的电平才能安全工作，所以我们需要用到分亚器电路，将电压分为两部分：3.3V + 1.7V
+
+<p align="center"><img src=./picture/LearningGPIO-06-2.jpg width=500 /></p>
+
+**超声波传感器的工作原理**：从树莓派向传感器触发引脚发出一个10μs脉冲（通过将触发引脚设为持续时间为10μs的高电平来创建脉冲信号），一旦传感器接收到这个触发信号，它就会发出40kHz的超声波脉冲。在超声波脉冲发出后，我们应该等待回波信号（回波引脚在发出超声波脉冲之前保持低电平，当超声波脉冲发出之后变成高电平，并持续到收到回波信号为止），每个回波信号的长度为我们进行距离计算提供了计时。
+
+**Python代码：**
+
+```
+#!/usr/bin/env python
+# encoding: utf-8
+
+import RPi.GPIO
+import time
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
+Trig,Echo = 7,1
+
+print("开始测距\n")
+print("按Ctr+C退出\n")
+
+GPIO.setup(Trig,GPIO.OUTPUT)
+GPIO.setup(Echo,GPIO.INPUT)
+time.sleep(0.02)
+
+GPIO.output(Trig,False)
+time.sleep(1)
+
+try:
+	while True:
+		# 触发脉冲
+		GPIO.output(Trig,True)
+		time.sleep(0.00001)
+		GPIO.output(Trig,False)
+		# 等待回波脉冲
+		while GPIO.input(Echo) == 0:
+			Start_time = time.time()
+		# 获取回波脉冲的持续时间
+		while GPIO.input(Echo) ==1:
+			End_time = time.time()
+		# 计算距离
+		Time = End_time - Start_time
+		Distance = 17150 * Time
+		print("当前距离为：%f cm",Distance)
+except KeyboardInterrupt:
+	pass
+
+GPIO.cleanup()
+```
+
 ---
 
 参考资料：
@@ -589,3 +650,5 @@ RPi.GPIO.cleanup()
 (1) [个人博客网站：芒果爱吃胡萝卜](http://blog.mangolovecarrot.net/)
 
 (2) [CSDN：树莓派学习二（点亮LED灯）](https://blog.csdn.net/qq_38005186/article/details/73076067)
+
+(3) [印度] Rushi Gajjar 《树莓派+传感器》，机械工业出版社

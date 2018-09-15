@@ -8,6 +8,8 @@
 - [04-使用按钮](#04-button)
 - [05-驱动数码管显示数字](#05-digitron)
 - [06-用超声波传感器测量距离](#06-measure-distance-by-ultrasonic-sensor)
+- [07-红外感应模块 + 蜂鸣器实现简易报警](#07-alarm-consist-of-infrared-sensor-and-buzzer)
+
 
 <h1 name="title">树莓派GPIO入门</h1>
 
@@ -643,6 +645,63 @@ except KeyboardInterrupt:
 GPIO.cleanup()
 ```
 
+<a name="07-alarm-consist-of-infrared-sensor-and-buzzer"><h2>07-红外感应模块 + 蜂鸣器实现简易报警 [<sup>目录</sup>](#content)</h2></a>
+
+实现基本功能：运行脚本后，感应模块每隔一定时间检测，如有人靠近，则发出哔哔报警声，并在屏幕打印提示信息，人若离开，则停止鸣叫。
+
+**原理：**
+
+当有人靠近红外传感器时，传感器的OUT引脚就会输出高电平，否则保持低电平 —— 将与传感器的OUT引脚相连的树莓派引脚作为输入
+
+将蜂鸣器的正极连接3.3V电源引脚，负极连接任意GPIO Pin引脚，该引脚作为输出，若该引脚为高电平，则蜂鸣器不响，调为低电平才响
+
+<p align="center"><img src=./picture/LearningGPIO-07.jpg width=500 /></p>
+
+**Python代码：**
+
+```
+import RPi.GPIO as GPIO
+import time
+
+# 初始化
+def init(in,out):
+	GPIO.setwarnings(False)
+	GPIO.setmode(GPIO.BOARD)
+	GPIO.setup(in,GPIO.IN)
+	GPIO.setup(out,GPIO.OUT)
+ 
+# 蜂鸣器鸣叫函数
+def beep(in,out):
+	while GPIO.input(in) == True:
+		GPIO.output(out,False)
+		time.sleep(0.5)
+		GPIO.output(out,True)
+		time.sleep(0.5)
+# 感应器侦测函数
+def detct(in,out):
+	try:
+		while True:
+			# 如果感应器针脚输出为True，则打印信息并执行蜂鸣器函数
+			if GPIO.input(in) == True:
+				print("Someone isclosing!")
+				beep(in,out)
+			# 否则将蜂鸣器的针脚电平设置为HIGH
+			else:
+				GPIO.output(out,True)
+				print("Nobody!")
+	except KeyboardInterrupt:
+		pass
+ 
+if __name__ == "__main__":
+	Infrared_in,Buzzer_out = 12,21
+	print("开始红外检测\n")
+	print("按Ctr+C退出\n")
+	init(Infrared_in,Buzzer_out)
+	detct(Infrared_in,Buzzer_out)
+	# 脚本运行完毕执行清理工作
+	GPIO.cleanup()
+```
+
 ---
 
 参考资料：
@@ -652,3 +711,5 @@ GPIO.cleanup()
 (2) [CSDN：树莓派学习二（点亮LED灯）](https://blog.csdn.net/qq_38005186/article/details/73076067)
 
 (3) [印度] Rushi Gajjar 《树莓派+传感器》，机械工业出版社
+
+(4) [树莓派实验室：红外感应模块+蜂鸣器实现简易报警](http://shumeipai.nxez.com/2014/08/31/infrared-sensor-module-and-buzzer-alarm-achieve.html)

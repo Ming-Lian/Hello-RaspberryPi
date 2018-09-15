@@ -605,7 +605,7 @@ RPi.GPIO.cleanup()
 #!/usr/bin/env python
 # encoding: utf-8
 
-import RPi.GPIO
+import RPi.GPIO as GPIO
 import time
 
 GPIO.setmode(GPIO.BCM)

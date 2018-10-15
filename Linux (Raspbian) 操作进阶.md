@@ -34,7 +34,7 @@
 		- [传统方法：使用$](#pass-parameters-use-doller)
 		- [使用getopt](#pass-parameters-use-getopt)
 		- [使用getopts](#pass-parameters-use-getopts)
-
+	- [输出重定向](#redirect-output)
 <h1 name="title">Linux进阶操作</h1>
 
 <p align="center"><img src=./picture/Linux-advanced-raspi-logo.jpg width="500"></p>
@@ -559,6 +559,19 @@ do
     esac
 done
 ```
+
+<a name="redirect-output"><h3>输出重定向 [<sup>目录</sup>](#content)</h3></a>
+
+当在运行一个程序，或者执行一个脚本时，会在执行过程中输出标准输出/标准错误，不论是标准输出还是标准错误，都是会默认输出到屏幕上，若想将它们输出到文件中，可以执行输出重定向
+
+> - `>`或`1>` 标准输出重定向到文件中，标准错误还是默认输出（输出到屏幕）
+> - `2>` 标准错误重定向到文件夹中，标准输出还是默认输出（输出到屏幕）
+> - `1> 2>&1` 将标准输出与标准错误绑定，一起输出到文件中
+
+若在执行`echo`时，想要指定输出的方式则可以采取以下方式：
+
+> - `echo $i >&1` 以标准输出方式输出
+> - `echo $i >&2` 以标准错误方式输出
 
 
 参考资料：

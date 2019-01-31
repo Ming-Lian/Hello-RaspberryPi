@@ -18,6 +18,8 @@
 
 <h1 name="title">Hexo + GitHub Homepage搭建个人博客</h1>
 
+<p align="center"><img src=./picture/Setup-private-BlogSite-homepage.png width=800 /></p>
+
 <a name="principle"><h2>1. 实现原理 [<sup>目录</sup>](#content)</h2></a>
 
 看GitHub某一个页面的URL：

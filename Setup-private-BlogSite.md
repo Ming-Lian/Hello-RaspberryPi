@@ -9,6 +9,7 @@
 - [3. 部署本地网站至GitHub](#deploy-to-github)
 - [番外](#extern)
 	- [本地图片加载](#load-local-image)
+	- [node.js请求HTTPS报错](#deal-with-nodejs-error)
 
 
 
@@ -94,7 +95,7 @@ https://github.com/Ming-Lian/NGS-analysis/blob/master/Stat-on-RNAseq.md
 	接下来，进入文件夹 myBlog，输入
 	
 	```
-	$ hexo s # hexo start的简写形式，两种写法都可以
+	$ hexo s # hexo server 的简写形式，两种写法都可以
 	```
 	
 	这样你已经搭好了本地的博客网站，且启动了本地预览服务，在浏览器地址栏中输入`localhost:4000`即可查看
@@ -137,7 +138,84 @@ tags:
 
 首先，你得有一个GitHub账号，登录后，新建一个命名为`<username>.github.io`的仓库
 
+接着是要在本地连接GitHub远程仓库
 
+> 由于你的本地Git仓库和GitHub仓库之间的传输是通过SSH加密的，所以我们需要配置验证信息，即提供本地仓库与GitHub仓库之间能够相互识别校验的SSH key
+> 
+> 先检查一下本地是否已经存在SSH key。检查方法为在`~/.ssh`文件夹下是否存在`id_dsa.pub`文件
+> 
+> 若没有SSH key，需要新建一个：
+> 
+> ```
+> $ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+> ```
+> 
+> 新建的SSH key需要用户提供邮箱来进行标记（是否需要与GitHub中提供的邮箱一致，目前还不清楚，所以谨慎起见，还是用GitHub中提供的邮箱）
+> 
+> 执行该命令后，会询问你SSH key信息文件的保存位置，直接回车会保存在默认位置`~/.ssh`。然后会询问你passphrase
+> 
+> 这样就在`~/.ssh`文件夹下生成了以下两个文件：
+> 
+> - id_rsa
+> - id_rsa.pub
+> 
+> 打开并复制`id_rsa.pub	`中的信息至剪切板中，然后用电脑浏览器进入GitHub网站，进入Setting菜单，左边选择 SSH and GPG keys，然后点击 New SSH key 按钮,title 设置标题，可以随便填，粘贴在你电脑上生成的 key。
+> 
+> 为了验证是否成功，输入以下命令：
+> 
+> ```
+> $ ssh -T git@github.com
+> ```
+> 
+> 随后你会看到以下的警告信息
+> 
+> ```
+> The authenticity of host 'github.com (IP ADDRESS)' can't be established.
+> RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48.
+> Are you sure you want to continue connecting (yes/no)?
+> ```
+> 
+> 输入yes然后回车，若输出以下信息则说明连接成功
+> 
+> ```
+> Hi username! You've successfully authenticated, but GitHub does not provide shell access.
+> ```
+> 
+> 从GitHub的 `Account` =>`Settings` =>`SSH and GPG keys` 也可以看到，原先灰色的钥匙图标被点亮激活了，变成了绿色的
+> 
+> <p align="center"><img src=./picture/Setup-private-BlogSite-3.png width=600 /></p>
+
+最后就是GitHub服务器端的部署了
+
+> Hexo 提供了快速方便的一键部署功能，只需一条命令就能将网站部署到服务器上
+> 
+> ```
+> $ hexo deploy # 也可以简写成 "hexo d"
+> ```
+> 
+> 在开始之前，必须先在 `myBlog/_config.yml` 中修改参数
+> 
+> <p align="center"><img src=./picture/Setup-private-BlogSite-4.png width=500 /></p>
+> 
+> 这一步的目的是将 Hexo 与 GitHub 进行关联
+> 
+> 在执行`hexo d`进行远程部署时，可能出现以下形式的报错：
+> 
+> ```
+> ERROR Deployer not found: git
+> ```
+> 
+> 报错信息说明未安装针对git的远程部署工具，那就安装吧
+> 
+> ```
+> $ npm install hexo-deployer-git --save
+> ```
+> 在执行git远程部署工具`hexo-deployer-git`的安装时，可能又会遇到下面的报错：
+>
+> ```
+> npm ERR! Error: UNABLE_TO_VERIFY_LEAF_SIGNATURE
+> ```
+> 这个报错信息的分析与解决请看 [node.js请求HTTPS报错](#deal-with-nodejs-error)
 
 <a name="extern"><h2>番外 [<sup>目录</sup>](#content)</h2></a>
 
@@ -157,6 +235,24 @@ tags:
 ![Alt text](../../images/img.jpg)
 ```
 
+<a name="deal-with-nodejs-error"><h3>node.js请求HTTPS报错 [<sup>目录</sup>](#content)</h3></a>
+
+在用Nodejs发送https请求时候，出现`Error: UNABLE_TO_VERIFY_LEAF_SIGNATURE`的错误
+
+错误的原因是：对方数字证书设置不正确
+
+解决方案，设置不进行证书的验证
+
+```
+$ npm config set strict-ssl false
+```
+
+这个设置只是为了临时解决这个证书不正确而我们又不得不用的网站的问题，为了安全起见，执行完上面的操作之后，最好再开启证书验证
+
+```
+$ npm config set strict-ssl true
+```
+
 ---
 
 参考资料：
@@ -164,3 +260,7 @@ tags:
 (1) [【五分钟学算法】【新手向】从零开始搭建一个酷炫免费的个人博客](https://mp.weixin.qq.com/s/uxt3NX760gdNN-xld7fmZA)
 
 (2) [Hexo中如何用Markdown插入本地图片](https://www.cnblogs.com/ccf-fly/p/4873379.html)
+
+(3) [Error: UNABLE_TO_VERIFY_LEAF_SIGNATURE Phonegap Installation](https://stackoverflow.com/questions/20747817/error-unable-to-verify-leaf-signature-phonegap-installation)
+
+(4) [node.js请求HTTPS报错：UNABLE_TO_VERIFY_LEAF_SIGNATURE\的解决方法](https://www.jb51.net/article/100415.htm)

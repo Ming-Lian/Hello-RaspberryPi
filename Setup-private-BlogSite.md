@@ -30,14 +30,14 @@ https://github.com/Ming-Lian/NGS-analysis/blob/master/Stat-on-RNAseq.md
 ```
 ~
 |---- User1 # 用户名
-		|---- repo1 # 仓库名
-				|---- blob # 固定文件夹，意义不明
-						|---- branch1 # 仓库下的分支名，默认分支为master
-						|---- branch2
-						...
-		|---- repo2
-		|---- repo3
-		...
+	|---- repo1 # 仓库名
+		|---- blob # 固定文件夹，意义不明
+			|---- branch1 # 仓库下的分支名，默认分支为master
+			|---- branch2
+			...
+	|---- repo2
+	|---- repo3
+	...
 |---- User2
 |---- User3
 ...

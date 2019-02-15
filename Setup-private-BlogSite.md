@@ -81,6 +81,13 @@ https://github.com/Ming-Lian/NGS-analysis/blob/master/Stat-on-RNAseq.md
 	```
 	$ npm install -g hexo-cli
 	```
+	
+	默认的安装源在国外，可能因为网络问题导致的安装失败，采用以下方式解决（使用淘宝源）：
+
+	```
+	$ npm install -g cnpm --registry=https://registry.npm.taobao.org
+	$ cnpm install hexo-cli -g
+	```
 
 - **Hexo使用**
 
@@ -261,8 +268,10 @@ $ npm config set strict-ssl true
 
 (1) [【五分钟学算法】【新手向】从零开始搭建一个酷炫免费的个人博客](https://mp.weixin.qq.com/s/uxt3NX760gdNN-xld7fmZA)
 
-(2) [Hexo中如何用Markdown插入本地图片](https://www.cnblogs.com/ccf-fly/p/4873379.html)
+(2) [关于HEXO安装失败的解决方法](https://www.cnblogs.com/qq597585136/p/6964599.html)
 
-(3) [Error: UNABLE_TO_VERIFY_LEAF_SIGNATURE Phonegap Installation](https://stackoverflow.com/questions/20747817/error-unable-to-verify-leaf-signature-phonegap-installation)
+(3) [Hexo中如何用Markdown插入本地图片](https://www.cnblogs.com/ccf-fly/p/4873379.html)
 
-(4) [node.js请求HTTPS报错：UNABLE_TO_VERIFY_LEAF_SIGNATURE\的解决方法](https://www.jb51.net/article/100415.htm)
+(4) [Error: UNABLE_TO_VERIFY_LEAF_SIGNATURE Phonegap Installation](https://stackoverflow.com/questions/20747817/error-unable-to-verify-leaf-signature-phonegap-installation)
+
+(5) [node.js请求HTTPS报错：UNABLE_TO_VERIFY_LEAF_SIGNATURE\的解决方法](https://www.jb51.net/article/100415.htm)

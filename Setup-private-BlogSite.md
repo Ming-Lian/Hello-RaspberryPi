@@ -86,7 +86,7 @@ https://github.com/Ming-Lian/NGS-analysis/blob/master/Stat-on-RNAseq.md
 
 	```
 	$ npm install -g cnpm --registry=https://registry.npm.taobao.org
-	$ cnpm install hexo-cli -g
+	$ cnpm install hexo-cli -g --registry=https://registry.npm.taobao.org
 	```
 
 - **Hexo使用**

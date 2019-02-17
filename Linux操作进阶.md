@@ -206,7 +206,7 @@ deb-src http://mirrors.ustc.edu.cn/raspbian/raspbian/ jessie main contrib non-fr
 接着更改/etc/apt/source.list.d/raspi.list:
 
 ```
-deb http://mirrors.ustc.edu.cn/archive.raspberrypi.org/ jessie main ui
+deb http://mirrors.ustc.edu.cn/archive.raspberrypi.org/debian/ jessie main ui
 ```
 
 <a name="software-management"><h3>软件管理：APT/dpkg [<sup>目录</sup>](#content)</h3></a>

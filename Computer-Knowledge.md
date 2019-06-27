@@ -3,7 +3,9 @@
 [计算机基础知识](#title)
 - [1. 计算机发展历史](#history-of-computer)
 - [2. 集成电路与数字电路](#integrated-circuit-and-digital-circuit)
-
+- [3. 存储器](#storage-device)
+    - [3.1. 机械硬盘](#hard-drive-disk)
+    - [3.2. 固态硬盘](#solid-state-disk)
 
 
 
@@ -97,7 +99,81 @@ CPU中重要的负责进行执行运算的部分叫做算术逻辑单元，它�
 >
 > 集成度高，体积小，功耗低是数字电路突出的优点之一。电路的设计、维修、维护灵活方便，随着集成电路技术的高速发展，数字逻辑电路的集成度越来越高
 
+<a name="storage-device"><h2>3. 存储器 [<sup>目录</sup>](#content)</h2></a>
 
+硬盘分为机械硬盘和固态硬盘
+
+<p align="center"><img src=./picture/Computer-Knowledge-storage-device-01.png width=600 /></p>
+
+<a name="hard-drive-disk"><h3>3.1. 机械硬盘 [<sup>目录</sup>](#content)</h3></a>
+
+对于机械硬盘，最重要的结构是这些两面涂有磁性材料的磁盘，在工作时会以每分钟 7200 转的速度旋转
+
+<p align="center"><img src=./picture/Computer-Knowledge-storage-device-02.png width=600 /></p>
+
+写入数据时，距离盘面 3 纳米的磁头会利用电磁铁，改变磁盘上磁性材料的极性来记录数据，两种极性分别对应 0 或 1
+
+<p align="center"><img src=./picture/Computer-Knowledge-storage-device-03.gif width=600 /></p>
+
+而读取数据时，旁边的读取器可以识别磁性材料的不同极性，再还原成 0 或 1 
+
+<p align="center"><img src=./picture/Computer-Knowledge-storage-device-04.gif width=600 /></p>
+
+一片磁盘分为若干个磁道，每个磁道又分为各个扇区。扇区是磁盘存储的最小数据块，大小一般是 512 字节
+
+因此，磁头要想读取某个文件，必须在电机驱动下，先找到对应的磁道，再等磁盘转到对应扇区才行
+
+<p align="center"><img src=./picture/Computer-Knowledge-storage-device-05.gif width=600 /></p>
+
+一般会有十几毫秒的延迟，这就让机械硬盘在读取分散于磁盘各处的数据时，速度将大幅降低
+
+<a name="solid-state-disk"><h3>3.2. 固态硬盘 [<sup>目录</sup>](#content)</h3></a>
+
+前面提到机械硬盘存在的最大问题是读写的延迟问题
+
+基于电路的固态硬盘则不用担心这种延迟，固态硬盘储存数据靠的是闪存。
+
+在工作时，数据会通过接口进入主控制器，经处理后再分配到闪存中储存
+
+<p align="center"><img src=./picture/Computer-Knowledge-storage-device-06.gif width=600 /></p>
+
+闪存的基本存储单元是浮栅晶体管，主要有这些结构
+
+<p align="center"><img src=./picture/Computer-Knowledge-storage-device-07.png width=600 /></p>
+
+其中的浮栅被二氧化硅包裹，和上下绝缘
+
+<p align="center"><img src=./picture/Computer-Knowledge-storage-device-08.png width=600 /></p>
+
+在断电时也能够保存电子，当电子数量高于一个中间值就表示 0 ，低于中间值就表示 1 
+
+<p align="center"><img src=./picture/Computer-Knowledge-storage-device-09.png width=600 /></p>
+
+如何写数据？
+
+> 晶体管每次写入数据前都要先擦除，在 P 极上加一个电压，浮栅中原有的电子会因为量子隧穿效应通过绝缘层被吸出来，让浮栅中的电子数量低于中间值，还原成 1 
+>
+> <p align="center"><img src=./picture/Computer-Knowledge-storage-device-10.gif width=600 /></p>
+>
+> 如果要写入 0 ，就在控制极加一个电压，让电子穿过绝缘层再注回浮栅，使电子数量高于中间值，表示 0
+>
+> <p align="center"><img src=./picture/Computer-Knowledge-storage-device-11.gif width=600 /></p>
+
+如何读数据？
+
+> 在读取时，闪存无法直接得知浮栅中有多少电子，只能曲线救国
+>
+> 首先要知道，往控制极加一定大小的电压，会导通这两个 N 极。控制极上的电压越大，N 极间的电流也越大
+>
+> <p align="center"><img src=./picture/Computer-Knowledge-storage-device-12.gif width=600 /></p>
+>
+> 然而，存储 0 的浮栅，相比存储 1 的浮栅，有更多的电子，会抵消控制极上的电压，所以控制极需要更大的电压才能导通两个 N 极
+>
+> <p align="center"><img src=./picture/Computer-Knowledge-storage-device-13.gif width=600 /></p>
+>
+> 因此，当我们不知道浮栅中有多少电子时，就可以往控制极加一个中间值电压，如果两个 N 极导通，就能反推出浮栅中的电子较少，识别为 1；如果没有导通，就说明浮栅中的电子较多，识别为 0 
+>
+> <p align="center"><img src=./picture/Computer-Knowledge-storage-device-14.gif width=600 /></p>
 
 
 
@@ -109,3 +185,5 @@ CPU中重要的负责进行执行运算的部分叫做算术逻辑单元，它�
 (1) [漫话编程《漫话：如何给女朋友解释为什么计算机只认识0和1？》](https://mp.weixin.qq.com/s/9ePjft6QleS8pRz9AoXlmA)
 
 (2) [booksyhay《第2.5章 使用门电路搭建加法器》](https://blog.csdn.net/booksyhay/article/details/80709192)
+
+(3) [你的硬盘是如何储存数据的｜回形针](https://mp.weixin.qq.com/s/J3PgzRoHNSxzSqAnUKfRVg)

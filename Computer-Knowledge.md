@@ -6,7 +6,8 @@
 - [3. 存储器](#storage-device)
     - [3.1. 机械硬盘](#hard-drive-disk)
     - [3.2. 固态硬盘](#solid-state-disk)
-
+- [补充知识](#supplimentary)
+    - [*1. 5G知识](#5g-knowledge)
 
 
 
@@ -175,6 +176,47 @@ CPU中重要的负责进行执行运算的部分叫做算术逻辑单元，它�
 >
 > <p align="center"><img src=./picture/Computer-Knowledge-storage-device-14.gif width=600 /></p>
 
+<a name="supplimentary"><h2>补充知识 [<sup>目录</sup>](#content)</h2></a>
+
+<a name="5g-knowledge"><h3>*1. 5G知识 [<sup>目录</sup>](#content)</h3></a>
+
+国际电联制定的5G愿景：
+
+> - eMBB（增强型移动宽带）：就是指我们最常见的高速上网业务；
+> - mMTC（大规模机器类型通信）：用于大规模物联网；
+> - uRLLC（高可靠低时延通信）：最能体现5G特色的高可靠低时延业务，关于5G的绝大多数瑰丽想象都是基于这一场景；
+
+<p align="center"><img src=./picture/Computer-Knowledge-supplimentary-5G-1.png width=600 /></p>
+
+三大5G愿景的应用现状：
+
+> - 5G的eMBB似乎仅是锦上添花，让网速更快一些而已
+>
+> - 从4G时代引入的NB-IoT和eMTC这两个低功耗广覆盖的物联网技术已经可以满足海量机器互联的需求，但业界对应用和商业模式还在苦苦探索
+>
+> - 以自动驾驶为代表的低时延高可靠通信的应用，目前还在蹒跚学步，路慢慢其修远
+
+NSA组网：
+
+> <p align="center"><img src=./picture/Computer-Knowledge-supplimentary-5G-2.png width=300 /></p>
+>
+> 注意看图里面连接手机和4G基站，以及到4G核心网的各有一条实线和一条虚线，而手机到5G基站只有一条实线，5G基站到4G核心网也只有一条实线。这里的虚线代表控制面，实线代表用户面
+>
+> **控制面**：就是用来发送管理、调度资源所需的信令的通道
+>
+> **用户面**：直观理解就是发送用户具体的数据通道。用户面和控制面是完全分离的
+>
+> 在非独立组网下，5G以4G的补充和附庸的地位存在。手机采用双连接的方式同时连到4G和5G基站上，4G基站负责总体控制，5G基站只要在必要的时候分担大的数据流量就行了
+>
+> 这样就避免了对已经运行的4G核心网做过多的改动，又能利用5G基站的速度快能力强的优势，在5G初期覆盖不连续的时候能提高用户体验，因此得到了业界的广泛青睐
+
+SA组网：
+
+> <p align="center"><img src=./picture/Computer-Knowledge-supplimentary-5G-3.png width=300 /></p>
+>
+> 选项2的架构很简单，就是5G基站连接5G核心网，这是5G网络架构的终极形态，可以支持5G的所有应用，当然就包括最富有前景的uRLLC应用
+>
+> 别看架构简单，要建这样一张连续覆盖的5G网，要新建大量的基站和核心网，代价不菲。想想看，光中国移动就有将近230万个4G站点，要是在建同样大的一张5G网络得花多少钱？
 
 
 
@@ -187,3 +229,5 @@ CPU中重要的负责进行执行运算的部分叫做算术逻辑单元，它�
 (2) [booksyhay《第2.5章 使用门电路搭建加法器》](https://blog.csdn.net/booksyhay/article/details/80709192)
 
 (3) [你的硬盘是如何储存数据的｜回形针](https://mp.weixin.qq.com/s/J3PgzRoHNSxzSqAnUKfRVg)
+
+(4) [第一批5G手机明年都要禁止入网了，除了华为！](https://mp.weixin.qq.com/s/dtHpngFIdQJE_6qpqOt3Sw)

@@ -10,6 +10,7 @@
 	- [Ubuntu (apt)](#debian)
 	- [Raspbian](#raspbian)
 - [更改键盘布局](#change-keyboard)
+- [安装Gnome图形操作界面](#install-gnome-gui)
 - [更改软件源](#change-source)
 	- [raspbian-stretch(基于Debian9)](#stretch)
 	- [raspbian-jessie(基于Debian8)](#jessie)
@@ -22,6 +23,10 @@
 - [文本处理双剑客: sed & AWK](#operate-txt)
 	- [sed](#sed)
 	- [AWK](#awk)
+		- [AWK基础](#basic-knowledge-of-awk)
+		- [AWK进阶](#awk-advanced)
+	- [补充：find & grep](#find-and-grep)
+	- [${}，##和%%的使用](#use-special-sytax)
 - [硬链接与软链接](#hardlink-and-softlink)
 - [进程并行化](#parallel-process)
 	- [最简单的并行化方法：&+wait](#simplest-wait)
@@ -35,6 +40,8 @@
 		- [使用getopt](#pass-parameters-use-getopt)
 		- [使用getopts](#pass-parameters-use-getopts)
 	- [输出重定向](#redirect-output)
+
+
 <h1 name="title">Linux进阶操作</h1>
 
 <p align="center"><img src=./picture/Linux-advanced-raspi-logo.jpg width="500"></p>
@@ -164,6 +171,38 @@ sudo raspi-config
 ```
 进入后，选择：`5 Internationalisation Options` -> `Change Keyboard LaySet` -> `Generic 101-key PC` -> `English(US, alternative international)`
 
+<a name="install-gnome-gui"><h3>安装Gnome图形操作界面 [<sup>目录</sup>](#content)</h3></a>
+
+像安装CentOS，官方提供了较大的DVD IOS版的安装包，也提供了简化的Minimal IOS版的，如果选择的是Minimal版的，安装完之后一般只有命令行操作模式，不预装GNOME这样的GUI操作界面
+
+这时如果想安装GNOME图形操作界面怎么实现？（如果一开始就知道有GUI的需求，最好直接下载完整版的
+
+首先安装X(X Window System)
+
+```
+# yum groupinstall "X Window System"
+```
+
+由于这个软件组比较大，安装过程会比较慢，安装完成会出现complete！
+
+检查一下我们已经安装的软件以及可以安装的软件
+
+```
+# yum grouplist
+```
+
+<p align="center"><img src=./picture/Linux-advanced-install-gnome-gui-1.png width=600 /></p>
+
+然后安装我们需要的图形界面软件，GNOME(GNOME Desktop)
+
+一定要注意：名称必须对应
+
+```
+# yum groupinstall "GNOME Desktop"
+```
+
+安装完成后我们可以通过命令 `startx` 进入图形界面，第一次进入会比较慢，请耐心等待
+
 <a name="change-source"><h3>更改软件源 [<sup>目录</sup>](#content)</h3></a>
 
 **由于树莓派软件官方源在国外，所以连接不稳定，且速度慢，所以安装初次进入系统后，一定要修改一下软件源。**
@@ -286,6 +325,8 @@ nano /etc/apt/apt.conf.d/99openmediavault-release
 
 <a name="awk"><h4>AWK [<sup>目录</sup>](#content)</h4></a>
 
+<a name="basic-knowledge-of-awk"><h5>AWK基础 [<sup>目录</sup>](#content)</h5></a>
+
 脚本结构
 
 ```
@@ -338,6 +379,126 @@ InputFile
 |RS|记录分隔符（默认是一个换行符）|
 |RSTART|由match函数所匹配的字符串第一个位置|
 |SUBSEP|数组下标分隔符（默认值是\034）|
+
+<a name="awk-advanced"><h5>AWK进阶 [<sup>目录</sup>](#content)</h5></a>
+
+- 格式化输出
+
+	awk的格式化输出，和C语言的printf没什么两样：
+
+	```bash
+	$ awk '{printf "%-8s %-8s %-8s %-18s %-22s %-15s\n",$1,$2,$3,$4,$5,$6}' netstat.txt
+	```
+
+- 指定分隔符
+
+	```bash
+	$  awk  'BEGIN{FS=":"} {print $1,$3,$6}' /etc/passwd
+	```
+
+	上面的命令也等价于：（-F的意思就是指定分隔符）
+
+	```bash
+	$ awk  -F: '{print $1,$3,$6}' /etc/passwd
+	```
+
+	如果你要指定多个分隔符，你可以这样：`awk -F '[;:]'`
+
+- **折分文件**
+
+	```bash
+	$ awk 'NR!=1{print > $6}' netstat.txt
+ 
+	$ ls
+	ESTABLISHED  FIN_WAIT1  FIN_WAIT2  LAST_ACK  LISTEN  netstat.txt  TIME_WAIT
+	
+	$ cat ESTABLISHED
+	tcp        0      0 coolshell.cn:80        110.194.134.189:1032        ESTABLISHED
+	tcp        0      0 coolshell.cn:80        123.169.124.111:49809       ESTABLISHED
+	tcp        0      0 coolshell.cn:80        123.169.124.111:49829       ESTABLISHED
+	tcp        0   4166 coolshell.cn:80        61.148.242.38:30901         ESTABLISHED
+	tcp        0      0 coolshell.cn:80        110.194.134.189:4796        ESTABLISHED
+	tcp        0      0 coolshell.cn:80        123.169.124.111:49840       ESTABLISHED
+	
+	$ cat FIN_WAIT1
+	tcp        0      1 coolshell.cn:80        124.152.181.209:26825       FIN_WAIT1
+	
+	$ cat FIN_WAIT2
+	tcp        0      0 coolshell.cn:80        61.140.101.185:37538        FIN_WAIT2
+	tcp        0      0 coolshell.cn:80        116.234.127.77:11502        FIN_WAIT2
+	tcp        0      0 coolshell.cn:80        117.136.20.85:50025         FIN_WAIT2
+	
+	$ cat LAST_ACK
+	tcp        0      1 coolshell.cn:80        208.115.113.92:50601        LAST_ACK
+	
+	$ cat LISTEN
+	tcp        0      0 0.0.0.0:3306           0.0.0.0:*                   LISTEN
+	tcp        0      0 0.0.0.0:80             0.0.0.0:*                   LISTEN
+	tcp        0      0 127.0.0.1:9000         0.0.0.0:*                   LISTEN
+	tcp        0      0 :::22                  :::*                        LISTEN
+	
+	$ cat TIME_WAIT
+	tcp        0      0 coolshell.cn:80        124.205.5.146:18245         TIME_WAIT
+	tcp        0      0 coolshell.cn:80        183.60.215.36:36970         TIME_WAIT
+	tcp        0      0 coolshell.cn:80        183.60.212.163:51082        TIME_WAIT
+	```
+
+<a name="find-and-grep"><h4>补充：find & grep [<sup>目录</sup>](#content)</h4></a>
+
+（1）find
+
+```
+find . -name "*.jpg" -exec rm -fv {} \;
+```
+
+其中，
+
+- `{}`：代表find过滤出的以`.jpg`结尾的文件；
+
+- `\;`：`;`是`-exec`参数指定的command结束符，`\`对后面的分号进行转义；
+
+（2）grep
+
+<a name="use-special-sytax"><h4>${}，##和%%的使用 [<sup>目录</sup>](#content)</h4></a>
+
+假设我们定义了一个变量为：
+
+```
+file=/dir1/dir2/dir3/my.file.txt
+```
+
+可以用`${ }`分别替换得到不同的值：
+
+```
+${file#*/}：删掉第一个/ 及其左边的字符串：dir1/dir2/dir3/my.file.txt
+${file##*/}：删掉最后一个/  及其左边的字符串：my.file.txt
+${file#*.}：删掉第一个.  及其左边的字符串：file.txt
+${file##*.}：删掉最后一个.  及其左边的字符串：txt
+${file%/*}：删掉最后一个 /  及其右边的字符串：/dir1/dir2/dir3
+${file%%/*}：删掉第一个/  及其右边的字符串：(空值)
+${file%.*}：删掉最后一个 .  及其右边的字符串：/dir1/dir2/dir3/my.file
+${file%%.*}：删掉第一个 .   及其右边的字符串：/dir1/dir2/dir3/my
+```
+
+记忆的方法为：
+\# 是 去掉左边（键盘上\#在 \$ 的左边）
+\% 是去掉右边（键盘上\% 在\$ 的右边）
+单一符号是最小匹配；两个符号是最大匹配
+
+```
+${file:0:5}：提取最左边的5 个字节：/dir1
+${file:5:5}：提取第5 个字节右边的连续5个字节：/dir2
+```
+
+也可以对变量值里的字符串作替换：
+
+```
+${file/dir/path}：将第一个dir 替换为path：/path1/dir2/dir3/my.file.txt
+${file//dir/path}：将全部dir 替换为path：/path1/path2/path3/my.file.txt
+```
+
+`${#var}` 可计算出变量值的长度：
+`${#file}` 可得到27 ，因为`/dir1/dir2/dir3/my.file.txt` 是27个字节
 
 <a name="hardlink-and-softlink"><h3>硬链接与软链接 [<sup>目录</sup>](#content)</h3></a>
 
@@ -442,10 +603,9 @@ $ ifconfig -a
 <a name="solve-login-err-use-sshClient"><h3>解决Secure SSH Client登录服务器失败 [<sup>目录</sup>](#content)</h3></a>
 
 登录失败报错信息
->Server responded"Algorithm negotiation failed"
+> Server responded"Algorithm negotiation failed"
 Key exchange with the remote host failed. This can happen for
-example computer does not support the selected  
-algorthms.
+example computer does not support the selected algorthms.
 
 登录失败原因：
 
@@ -530,6 +690,8 @@ done
 
 <a name="pass-parameters-use-getopts"><h4>使用getopts [<sup>目录</sup>](#content)</h4></a>
 
+注意： getopts只能接受短参数，即一个字母作为一个参数
+
 ```
 getopts [option[:]] [DESCPRITION] VARIABLE
 ```
@@ -574,6 +736,9 @@ done
 > - `echo $i >&2` 以标准错误方式输出
 
 
+
+
+
 参考资料：
 
 (1) [Raspberry 3.5inch RPi LCD-4](http://blog.lxx1.com/2457/raspberry-3-5inch-rpi-lcd-4)
@@ -586,18 +751,22 @@ done
 
 (5) [树莓派开箱配置之更改键盘布局](http://shumeipai.nxez.com/2017/11/13/raspberry-pi-change-the-keyboard-layout.html)
 
-(6) [树莓派3B+ 软件源更改](http://blog.csdn.net/kxwinxp/article/details/78370980)
+(6) [树莓派3B+ 软件源更改](#http://blog.csdn.net/kxwinxp/article/details/78370980)
 
 (7) 小伊老师Linux课程课件
 
-(8) [Linux节点理解](https://blog.csdn.net/jijiahao95/article/details/53398475)
+(8) [AWK 简明教程](https://coolshell.cn/articles/9070.html)
 
-(9) [Bash脚本实现批量作业并行化](https://www.linuxidc.com/Linux/2015-01/112363.htm)
+(9) [Linux节点理解](https://blog.csdn.net/jijiahao95/article/details/53398475)
 
-(10) [树莓派 - 修改pi账号密码,开启root账号](http://blog.csdn.net/yoie01/article/details/45115067)
+(10) [Bash脚本实现批量作业并行化](https://www.linuxidc.com/Linux/2015-01/112363.htm)
 
-(11) [Ubuntu SSH Algorithm negotiation failed](http://chenqinfeng.com/2016/02/19/Ubuntu%20SSH%20Algorithm%20negotiation%20failed/)
+(11) [树莓派 - 修改pi账号密码,开启root账号](http://blog.csdn.net/yoie01/article/details/45115067)
 
-(12) [shell学习 - 处理脚本的多参数输入](https://blog.csdn.net/czyt1988/article/details/79110450)
+(12) [Ubuntu SSH Algorithm negotiation failed](http://chenqinfeng.com/2016/02/19/Ubuntu%20SSH%20Algorithm%20negotiation%20failed/)
 
-(13) [shell中脚本参数传递的两种方式](https://blog.csdn.net/sinat_36521655/article/details/79296181)
+(13) [shell学习 - 处理脚本的多参数输入](https://blog.csdn.net/czyt1988/article/details/79110450)
+
+(14) [shell中脚本参数传递的两种方式](https://blog.csdn.net/sinat_36521655/article/details/79296181)
+
+(15) [【百度经验】Linux CentOS 7的图形界面安装（GNOME、KDE等）](https://jingyan.baidu.com/article/0964eca26fc3b38284f53642.html)
